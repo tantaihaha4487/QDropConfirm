@@ -1,0 +1,4 @@
+name: QDropConfirm
+version: '1.0.0'
+main: net.thanachot.qDropConfirm.QDropConfirm
+api-version: '1.21'
