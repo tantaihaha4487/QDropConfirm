@@ -15,6 +15,8 @@ public class ConfigManager {
     public static void setupConfig(QDropConfirm plugin) {
         plugin.saveDefaultConfig();
         config = plugin.getConfig();
+        config.options().copyDefaults(true);
+        plugin.saveConfig();
     }
 
     public static FileConfiguration getConfig() {
@@ -24,6 +26,10 @@ public class ConfigManager {
     public static void reload() {
         QDropConfirm.getInstance().reloadConfig();
         config = QDropConfirm.getInstance().getConfig();
+    }
+
+    public static String getConfirmMessage() {
+        return config.getString("confirm-message");
     }
 
     public static @NotNull List<Material> getWhitelistMaterials() {
