@@ -1,6 +1,9 @@
-# Confirm drop message (MiniMessage Support!)
+# Confirmation drop message (MiniMessage Support!)
 # https://webui.advntr.dev/
 confirm-message: '<b><gold>(<yellow>i</yellow>)</gold></b> <gradient:#6BF965:#64F9F5>Tap <b>Q</b> Again to drop!</gradient>'
+
+# Delay(in ticks, 20 ticks = 1 second) after drop item to reset drop confirmation notify
+delay: 20 # 1secs
 
 # Whitelist item add confirm to drop
 # https://jd.papermc.io/paper/1.21.10/org/bukkit/Material.html

@@ -19,6 +19,7 @@ import java.util.UUID;
 public class PlayerListener implements Listener {
 
     private final HashMap<UUID, ItemStack> dropping = new HashMap<>();
+    private final HashMap<UUID, BukkitTask> tasks = new HashMap<>();
 
     private static void cancelFeedback(Player player) {
         player.sendActionBar(MiniMessage.miniMessage().deserialize(ConfigManager.getConfirmMessage()));
@@ -30,31 +31,38 @@ public class PlayerListener implements Listener {
 
         Player player = event.getPlayer();
         ItemStack item = event.getItemDrop().getItemStack();
+        UUID playerUUID = player.getUniqueId();
 
-        BukkitTask task = Bukkit.getScheduler().runTaskLaterAsynchronously(QDropConfirm.getInstance(), () ->
-            dropping.remove(player.getUniqueId()), 5 * 20L);
-
-        if (!ConfigManager.getWhitelistMaterials().contains(item.getType())) return;
-
-        // Player haven't drop item before
-        if (!dropping.containsKey(player.getUniqueId())) {
-            dropping.put(player.getUniqueId(), item);
-            cancelFeedback(player);
-            event.setCancelled(true);
-            task.cancel();
+        if (!ConfigManager.getWhitelistMaterials().contains(item.getType())) {
             return;
         }
 
-        // if drop new item
-        if (!dropping.get(player.getUniqueId()).isSimilar(item)) {
-            cancelFeedback(player);
-            task.cancel();
-            event.setCancelled(true);
-        } else {
-            dropping.remove(player.getUniqueId());
-            event.setCancelled(false);
+        if (tasks.containsKey(playerUUID)) {
+            tasks.get(playerUUID).cancel();
+            tasks.remove(playerUUID);
         }
 
+        // Player is confirming a drop for the same item.
+        if (dropping.containsKey(playerUUID) && dropping.get(playerUUID).isSimilar(item)) {
+            event.setCancelled(false);
+            dropping.remove(playerUUID);
+            return;
+        }
 
+        // This is a new item drop confirmation.
+        event.setCancelled(true);
+        cancelFeedback(player);
+
+        // Set/update the item being confirmed.
+        dropping.put(playerUUID, item);
+
+        // This runs if the player doesn't confirm in time.~
+        BukkitTask newTask = Bukkit.getScheduler().runTaskLater(QDropConfirm.getInstance(), () -> {
+            dropping.remove(playerUUID);
+            tasks.remove(playerUUID);
+        }, ConfigManager.getDelay());
+
+        // Store the new task.
+        tasks.put(playerUUID, newTask);
     }
 }

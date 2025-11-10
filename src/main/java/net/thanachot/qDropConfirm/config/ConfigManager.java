@@ -24,12 +24,20 @@ public class ConfigManager {
     }
 
     public static void reload() {
+        // check if config file is not exits
+        if (!QDropConfirm.getInstance().getDataFolder().exists()) {
+            QDropConfirm.getInstance().saveDefaultConfig();
+        }
         QDropConfirm.getInstance().reloadConfig();
         config = QDropConfirm.getInstance().getConfig();
     }
 
     public static String getConfirmMessage() {
         return config.getString("confirm-message");
+    }
+
+    public static Long getDelay() {
+        return config.getLong("delay");
     }
 
     public static @NotNull List<Material> getWhitelistMaterials() {
