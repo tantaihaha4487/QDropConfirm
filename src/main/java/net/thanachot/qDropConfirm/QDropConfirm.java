@@ -2,6 +2,7 @@ package net.thanachot.qDropConfirm;
 
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import net.thanachot.qDropConfirm.bstats.Metrics;
 import net.thanachot.qDropConfirm.command.QDropConfirmCommand;
 import net.thanachot.qDropConfirm.config.ConfigManager;
 import net.thanachot.qDropConfirm.listener.PlayerListener;
@@ -24,6 +25,11 @@ public final class QDropConfirm extends JavaPlugin {
             BasicCommand QDropConfirmCommand = new QDropConfirmCommand();
             commands.registrar().register("qdropconfirm", QDropConfirmCommand);
         });
+
+
+        // Bstats Metrics
+        int pluginId = 28116;
+        new Metrics(this, pluginId);
 
     }
 
